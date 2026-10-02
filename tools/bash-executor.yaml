@@ -1,0 +1,16 @@
+name: bash-executor
+description: Executes shell commands on the developer machine or container environment with permission checks and timeout management.
+input_schema:
+  type: object
+  properties:
+    command:
+      type: string
+      description: The shell command line string to run.
+    timeout_seconds:
+      type: integer
+      description: Maximum time in seconds before terminating the process (default 120).
+    working_directory:
+      type: string
+      description: Optional path from which to run the command.
+  required:
+    - command

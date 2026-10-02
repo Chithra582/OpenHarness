@@ -1,0 +1,21 @@
+spec_version: "0.1.0"
+name: "openharness"
+version: "0.1.9"
+description: "Open-source Python AI-powered CLI coding assistant and agent harness supporting tool use, MCP, swarms, and autopilot."
+author: "novix-science <support@openharness.ai>"
+license: "MIT"
+metadata:
+  domain: "Developer Tools / Autonomous CLI Coding Agent & Swarm Harness"
+  category: "Developer Tools"
+  framework: "OpenHarness (Python / Anthropic / OpenAI / MCP)"
+  language: "Python"
+skills:
+  - "cli-agent-execution"
+  - "swarm-agent-coordination"
+  - "permission-gating-security"
+  - "mcp-ecosystem-bridging"
+tools:
+  - "bash-executor"
+  - "code-editor"
+  - "swarm-agent-dispatcher"
+  - "mcp-client-bridge"

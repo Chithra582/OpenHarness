@@ -1,0 +1,22 @@
+name: swarm-agent-dispatcher
+description: Spawns specialized worker subagents with isolated context boundaries for parallel or sequential task execution.
+input_schema:
+  type: object
+  properties:
+    task_description:
+      type: string
+      description: Scoped actionable objective for the child subagent.
+    subagent_role:
+      type: string
+      description: Persona or specialization title (e.g. Researcher, Code Reviewer, Implementer).
+    model_override:
+      type: string
+      description: Optional LLM model identifier to use for the subagent.
+    file_scope:
+      type: array
+      items:
+        type: string
+      description: Specific files or directories restricted to this subagent.
+  required:
+    - task_description
+    - subagent_role

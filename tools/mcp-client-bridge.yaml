@@ -1,0 +1,25 @@
+name: mcp-client-bridge
+description: Connects to external Model Context Protocol (MCP) servers and routes tool calls and prompt queries.
+input_schema:
+  type: object
+  properties:
+    server_identifier:
+      type: string
+      description: Name of the registered MCP server.
+    method:
+      type: string
+      enum:
+        - list_tools
+        - call_tool
+        - list_resources
+        - get_prompt
+      description: MCP protocol method to invoke.
+    tool_name:
+      type: string
+      description: Target tool name when method is call_tool.
+    arguments:
+      type: object
+      description: Parameter payload passed to the remote MCP tool.
+  required:
+    - server_identifier
+    - method
