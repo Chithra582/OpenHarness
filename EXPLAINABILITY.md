@@ -1,8 +1,8 @@
 # EXPLAINABILITY.md
 
-This document explains the internal mechanisms, data lineage, operational boundaries, and governance framework of **# Explainability & Decision Transparency Report** (`openharness`) in accordance with the **OpenGAP v0.1.0** specification for the **HiDevs GitAgent Passport** clearance pipeline.
+This document explains the internal mechanisms, data lineage, operational boundaries, and governance framework of **OpenHarness** (`openharness`) in accordance with the **OpenGAP v0.1.0** specification for the **HiDevs GitAgent Passport** clearance pipeline.
 
-> **Agent Name:** # Explainability & Decision Transparency Report (`openharness`)  
+> **Agent Name:** OpenHarness (`openharness`)  
 > **Specification:** OpenGAP v0.1.0  
 > **Category / Domain:** Developer Tools / Autonomous CLI Coding Agent & Swarm Harness  
 > **Compliance Standard:** OpenGAP Checkpoint 2 (Explainability & Decision Governance), OWASP LLM Top 10, MITRE ATLAS  
@@ -11,7 +11,7 @@ This document explains the internal mechanisms, data lineage, operational bounda
 
 ## How the Agent Decides
 
-# Explainability & Decision Transparency Report operates via a deterministic five-stage operational pipeline.
+The agent operates via a strictly disciplined, 5-stage deterministic execution pipeline enforcing safety gating and empirical test verification before each turn completion.
 
 ### 1. Decision Architecture
 
@@ -52,7 +52,6 @@ The runtime intake, state classification, evaluation, and execution tracking ope
 
 ### 2. Decision Logic & Routing Formulations
 
-Scoring
 Tool selection affinity across available tools $t \in T$ is resolved by evaluating semantic relevance against task requirement $q$:
 
 $$S_{\text{affinity}}(t) = w_1 \cdot \text{IntentMatch}(t, q) + w_2 \cdot \text{ContextRelevance}(t) + w_3 \cdot \text{ToolCostEfficiency}(t)$$
@@ -70,29 +69,31 @@ Where matching destructive patterns ($c \in \{\text{rm}, \text{force}, \text{sud
 
 ### 3. Thresholding & Refusal Decision Criteria
 
-# Explainability & Decision Transparency Report enforces strict operational boundaries and deterministic refusal thresholds:
-- **Refusal on ERR_PERMISSION_DENIED_BY_USER**: **Interactive User Rejection** halts execution with code `ERR_PERMISSION_DENIED_BY_USER`.
-- **Refusal on ERR_SHELL_COMMAND_TIMEOUT**: **Process Execution Timeout** halts execution with code `ERR_SHELL_COMMAND_TIMEOUT`.
-- **Refusal on ERR_UNVERIFIED_COMPLETION_ASSERTION**: **Premature Completion Claim** halts execution with code `ERR_UNVERIFIED_COMPLETION_ASSERTION`.
-- **Refusal on ERR_CONTEXT_WINDOW_OVERFLOW**: **Context Token Limit** halts execution with code `ERR_CONTEXT_WINDOW_OVERFLOW`.
-- **Refusal on ERR_SUBAGENT_RECURSION_LIMIT**: **Subagent Recursion Limit** halts execution with code `ERR_SUBAGENT_RECURSION_LIMIT`.
+OpenHarness enforces strict operational boundaries and deterministic refusal thresholds:
+- **Refusal on ERR_PERMISSION_DENIED_BY_USER**: Interactive User Rejection (Operator declines permission prompt) halts execution with code `ERR_PERMISSION_DENIED_BY_USER`.
+- **Refusal on ERR_SHELL_COMMAND_TIMEOUT**: Process Execution Timeout (Command execution time > 120 s) halts execution with code `ERR_SHELL_COMMAND_TIMEOUT`.
+- **Refusal on ERR_UNVERIFIED_COMPLETION_ASSERTION**: Premature Completion Claim (Zero test evidence provided) halts execution with code `ERR_UNVERIFIED_COMPLETION_ASSERTION`.
+- **Refusal on ERR_CONTEXT_WINDOW_OVERFLOW**: Context Token Limit (Context length > 180,000 tokens) halts execution with code `ERR_CONTEXT_WINDOW_OVERFLOW`.
+- **Refusal on ERR_SUBAGENT_RECURSION_LIMIT**: Subagent Recursion Limit (Swarm nesting depth > 3 levels) halts execution with code `ERR_SUBAGENT_RECURSION_LIMIT`.
 
 ### 4. Fallback Decision Mechanism
 
 Continuous operational stability is maintained through layered fault recovery:
+- **Tier 1 (Automated Tool Retry & Backoff)**: Transient network errors or brief file lock collisions automatically retry up to 3 times with exponential backoff before failing.
+- **Tier 2 (Model & Tool Fallback)**: If a frontier model returns empty or invalid tool arguments, the engine falls back to an alternate configured provider or simpler file tools.
 - **Model Fallback Cascade**: High-level reasoning and synthesis default to `gemini-2.0-flash` with automatic failover to `gpt-4o` and `claude-3-5-sonnet`.
 
 ### 5. Human-in-the-Loop Governance
 
 Human operators retain sovereign authority over the multi-agent execution lifecycle:
-- **Consequential Action Sign-Off**: Sensitive and consequential actions require operator sign-off.
-- **Offline Ledger Auditing**: Operators can verify execution records and state transitions offline.
+- **Tier 3 (Interactive Operator Governance)**: Destructive commands, persistent test failures, or ambiguous user queries pause execution and prompt the human developer in the terminal.
+- **Benchmark Trajectory Auditing**: Operators inspect evaluation traces, raw generation tokens, and container logs to verify scoring fidelity.
 
 ---
 
 ## The Data It Uses
 
-# Explainability & Decision Transparency Report operates under strict principles of data minimization, environment isolation, and privacy protection.
+OpenHarness operates under strict principles of data minimization, environment isolation, and privacy protection.
 
 ### 1. Ingested Input Data
 
@@ -103,7 +104,9 @@ The framework processes only operational data necessary to perform its functions
 
 ### 2. Configuration & Reference Data
 
-- **Configuration Schemas**: Declarative system policy files.
+- **Model Context Protocol (MCP)**: JSON-RPC 2.0 interoperability standard for LLMs and tools.
+- **Test-Driven Development (TDD)**: Red-Green-Refactor development methodology.
+- **POSIX Shell Standards**: Deterministic command exit code semantics.
 
 ### 3. Base Model & Inference Lineage
 
@@ -121,7 +124,7 @@ The framework processes only operational data necessary to perform its functions
 
 ## Limitations
 
-Understanding the operational boundaries and technical constraints of # Explainability & Decision Transparency Report is essential for effective deployment.
+Understanding the operational boundaries and technical constraints of OpenHarness is essential for effective deployment.
 
 ### 1. Interactive Terminal Shell Stalling on Indefinite Prompts
 - **Limitation**: Running interactive CLI programs (e.g. `vim`, `nano`, interactive shell prompts) can hang the headless execution loop.
