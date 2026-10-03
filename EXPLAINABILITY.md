@@ -11,8 +11,7 @@ This document explains the internal mechanisms, data lineage, operational bounda
 
 ## How the Agent Decides
 
-### 1. Deterministic Multi-Stage Decision Pipeline
-The agent operates via a strictly disciplined, 5-stage deterministic execution pipeline enforcing safety gating and empirical test verification before each turn completion.
+# Explainability & Decision Transparency Report operates via a deterministic five-stage operational pipeline.
 
 ### 1. Decision Architecture
 
@@ -53,13 +52,30 @@ The runtime intake, state classification, evaluation, and execution tracking ope
 
 ### 2. Decision Logic & Routing Formulations
 
+Scoring
+Tool selection affinity across available tools $t \in T$ is resolved by evaluating semantic relevance against task requirement $q$:
 
+$$S_{\text{affinity}}(t) = w_1 \cdot \text{IntentMatch}(t, q) + w_2 \cdot \text{ContextRelevance}(t) + w_3 \cdot \text{ToolCostEfficiency}(t)$$
+
+Where:
+- $w_1 = 0.50$: Semantic similarity between tool capabilities and required action.
+- $w_2 = 0.30$: Relevance to active workspace files currently under inspection.
+- $w_3 = 0.20$: Computational cost factor favoring lightweight AST/file tools over heavy shell subshells.
+
+Command risk evaluation $R_{\text{risk}}(c)$ for shell command $c$ determines whether interactive approval is required:
+
+$$R_{\text{risk}}(c) = \sum_{k} v_k \cdot \mathbb{I}(c \text{ matches pattern } k)$$
+
+Where matching destructive patterns ($c \in \{\text{rm}, \text{force}, \text{sudo}, \text{kill}\}$) yields $R_{\text{risk}} \ge 1.0$, immediately triggering mandatory user confirmation.
 
 ### 3. Thresholding & Refusal Decision Criteria
 
 # Explainability & Decision Transparency Report enforces strict operational boundaries and deterministic refusal thresholds:
-- **Refusal on Policy Violation**: Requests violating boundary constraints halt with code `ERR_POLICY_VIOLATION`.
-- **Refusal on Timeout**: Executions exceeding budget limits terminate with code `ERR_EXECUTION_TIMEOUT`.
+- **Refusal on ERR_PERMISSION_DENIED_BY_USER**: **Interactive User Rejection** halts execution with code `ERR_PERMISSION_DENIED_BY_USER`.
+- **Refusal on ERR_SHELL_COMMAND_TIMEOUT**: **Process Execution Timeout** halts execution with code `ERR_SHELL_COMMAND_TIMEOUT`.
+- **Refusal on ERR_UNVERIFIED_COMPLETION_ASSERTION**: **Premature Completion Claim** halts execution with code `ERR_UNVERIFIED_COMPLETION_ASSERTION`.
+- **Refusal on ERR_CONTEXT_WINDOW_OVERFLOW**: **Context Token Limit** halts execution with code `ERR_CONTEXT_WINDOW_OVERFLOW`.
+- **Refusal on ERR_SUBAGENT_RECURSION_LIMIT**: **Subagent Recursion Limit** halts execution with code `ERR_SUBAGENT_RECURSION_LIMIT`.
 
 ### 4. Fallback Decision Mechanism
 
@@ -69,8 +85,8 @@ Continuous operational stability is maintained through layered fault recovery:
 ### 5. Human-in-the-Loop Governance
 
 Human operators retain sovereign authority over the multi-agent execution lifecycle:
-- **Operational Review**: Sensitive actions require operator sign-off.
-- **Audit Logging**: All decisions are recorded for auditability.
+- **Consequential Action Sign-Off**: Sensitive and consequential actions require operator sign-off.
+- **Offline Ledger Auditing**: Operators can verify execution records and state transitions offline.
 
 ---
 
@@ -81,11 +97,13 @@ Human operators retain sovereign authority over the multi-agent execution lifecy
 ### 1. Ingested Input Data
 
 The framework processes only operational data necessary to perform its functions:
-- **Input Directives**: Operational tasks and data payloads.
+- **Developer Instructions**: Natural language coding prompts, questions, and feature requests.
+- **Local Source Files**: Source code, test scripts, project manifests, and diff patches.
+- **Terminal Telemetry**: Process return codes, stdout/stderr streams, and execution timings.
 
 ### 2. Configuration & Reference Data
 
-- **Configuration Schemas**: Declarative system configuration files.
+- **Configuration Schemas**: Declarative system policy files.
 
 ### 3. Base Model & Inference Lineage
 
@@ -104,101 +122,6 @@ The framework processes only operational data necessary to perform its functions
 ## Limitations
 
 Understanding the operational boundaries and technical constraints of # Explainability & Decision Transparency Report is essential for effective deployment.
-
-### 1. Deterministic Multi-Stage Decision Pipeline
-The agent operates via a strictly disciplined, 5-stage deterministic execution pipeline enforcing safety gating and empirical test verification before each turn completion.
-
-```
-+-----------------------------------------------------------------------------------+
-|                        Deterministic OpenHarness Pipeline                         |
-+-----------------------------------------------------------------------------------+
-|  [Stage 1: Prompt Ingestion & Intent Resolution Gate]                             |
-|     --> Ingest user instruction, parse context files, & formulate action plan     |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 2: Context Pruning & Tool Selection]                                      |
-|     --> Filter relevant tools & files; resolve subagent vs. local execution        |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 3: Security Permission & Risk Assessment Gate]                            |
-|     --> Evaluate bash commands against risk rubric; prompt user on high-risk ops  |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 4: Execution, Telemetry Capture & Tool Handling]                          |
-|     --> Execute approved bash/file tools; stream outputs; handle exit codes       |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 5: Evidence-Based Verification & Turn Finalization]                       |
-|     --> Execute test commands, verify exit code 0, & output final response        |
-+-----------------------------------------------------------------------------------+
-```
-
-### 2. Mathematical Decision & Affinity Scoring
-Tool selection affinity across available tools $t \in T$ is resolved by evaluating semantic relevance against task requirement $q$:
-
-$$S_{\text{affinity}}(t) = w_1 \cdot \text{IntentMatch}(t, q) + w_2 \cdot \text{ContextRelevance}(t) + w_3 \cdot \text{ToolCostEfficiency}(t)$$
-
-Where:
-- $w_1 = 0.50$: Semantic similarity between tool capabilities and required action.
-- $w_2 = 0.30$: Relevance to active workspace files currently under inspection.
-- $w_3 = 0.20$: Computational cost factor favoring lightweight AST/file tools over heavy shell subshells.
-
-Command risk evaluation $R_{\text{risk}}(c)$ for shell command $c$ determines whether interactive approval is required:
-
-$$R_{\text{risk}}(c) = \sum_{k} v_k \cdot \mathbb{I}(c \text{ matches pattern } k)$$
-
-Where matching destructive patterns ($c \in \{\text{rm}, \text{force}, \text{sudo}, \text{kill}\}$) yields $R_{\text{risk}} \ge 1.0$, immediately triggering mandatory user confirmation.
-
-### 3. Thresholding & Refusal Decision Criteria
-Operations that exceed safety thresholds or violate procedural rules trigger immediate refusal with standardized error codes:
-
-| Threshold Parameter | Value | Decision / Refusal Action | Error Code |
-| :--- | :--- | :--- | :--- |
-| **Interactive User Rejection** | Operator declines permission prompt | Abort proposed shell action; seek alternative path | `ERR_PERMISSION_DENIED_BY_USER` |
-| **Process Execution Timeout** | Command execution time > 120 s | Terminate child process; capture partial stdout/stderr | `ERR_SHELL_COMMAND_TIMEOUT` |
-| **Premature Completion Claim** | Zero test evidence provided | Reject assertion; mandate test execution command | `ERR_UNVERIFIED_COMPLETION_ASSERTION` |
-| **Context Token Limit** | Context length > 180,000 tokens | Trigger automatic context pruning & history compaction | `ERR_CONTEXT_WINDOW_OVERFLOW` |
-| **Subagent Recursion Limit** | Swarm nesting depth > 3 levels | Block child subagent spawn; enforce flat coordination | `ERR_SUBAGENT_RECURSION_LIMIT` |
-
-### 4. Multi-Tier Fallback Mechanisms & Human-in-the-Loop Governance
-1. **Tier 1 (Automated Tool Retry & Backoff)**: Transient network errors or brief file lock collisions automatically retry up to 3 times with exponential backoff before failing.
-2. **Tier 2 (Model & Tool Fallback)**: If a frontier model returns empty or invalid tool arguments, the engine falls back to an alternate configured provider or simpler file tools.
-3. **Tier 3 (Interactive Operator Governance)**: Destructive commands, persistent test failures, or ambiguous user queries pause execution and prompt the human developer in the terminal.
-
----
-
-## The Data It Uses
-
-### 1. Ingestion Data & Input Types
-- **Developer Instructions**: Natural language coding prompts, questions, and feature requests.
-- **Local Source Files**: Source code, test scripts, project manifests, and diff patches.
-- **Terminal Telemetry**: Process return codes, stdout/stderr streams, and execution timings.
-
-### 2. Reference Standards & Methodologies
-- **Model Context Protocol (MCP)**: JSON-RPC 2.0 interoperability standard for LLMs and tools.
-- **Test-Driven Development (TDD)**: Red-Green-Refactor development methodology.
-- **POSIX Shell Standards**: Deterministic command exit code semantics.
-
-### 3. Model Lineage & System Architecture
-- **Supported Models**: Anthropic Claude 3.5 Sonnet / Haiku / Opus, OpenAI GPT-4o / o1, DeepSeek, Local Ollama.
-- **Runtime Environment**: Python 3.10+, Typer, Prompt Toolkit, Textual, Rich, websockets.
-
-### 4. Data Privacy, Governance & Retention
-- **Local Processing**: Code changes and file edits happen locally on the developer's filesystem.
-- **Zero Involuntary Telemetry**: No tracking metrics or conversational history are uploaded to third parties.
-- **Credential Protection**: Environment variables and API keys are redacted from logs and terminal transcripts.
-
----
-
-## Limitations
 
 ### 1. Interactive Terminal Shell Stalling on Indefinite Prompts
 - **Limitation**: Running interactive CLI programs (e.g. `vim`, `nano`, interactive shell prompts) can hang the headless execution loop.
@@ -238,102 +161,7 @@ Operations that exceed safety thresholds or violate procedural rules trigger imm
 | - Base model lineage & deterministic engines | Section 3 | Verified |
 | - Data privacy, retention lifecycle & MITRE/OWASP | Section 4 | Verified |
 | **Its limitations** | [Limitations](#limitations) | **Covered** |
-| - Deterministic Multi-Stage Decision Pipeline
-The agent operates via a strictly disciplined, 5-stage deterministic execution pipeline enforcing safety gating and empirical test verification before each turn completion.
-
-```
-+-----------------------------------------------------------------------------------+
-|                        Deterministic OpenHarness Pipeline                         |
-+-----------------------------------------------------------------------------------+
-|  [Stage 1: Prompt Ingestion & Intent Resolution Gate]                             |
-|     --> Ingest user instruction, parse context files, & formulate action plan     |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 2: Context Pruning & Tool Selection]                                      |
-|     --> Filter relevant tools & files; resolve subagent vs. local execution        |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 3: Security Permission & Risk Assessment Gate]                            |
-|     --> Evaluate bash commands against risk rubric; prompt user on high-risk ops  |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 4: Execution, Telemetry Capture & Tool Handling]                          |
-|     --> Execute approved bash/file tools; stream outputs; handle exit codes       |
-+-----------------------------------------+-----------------------------------------+
-                                          |
-                                          v
-+-----------------------------------------------------------------------------------+
-|  [Stage 5: Evidence-Based Verification & Turn Finalization]                       |
-|     --> Execute test commands, verify exit code 0, & output final response        |
-+-----------------------------------------------------------------------------------+
-```
-
-### 2. Mathematical Decision & Affinity Scoring
-Tool selection affinity across available tools $t \in T$ is resolved by evaluating semantic relevance against task requirement $q$:
-
-$$S_{\text{affinity}}(t) = w_1 \cdot \text{IntentMatch}(t, q) + w_2 \cdot \text{ContextRelevance}(t) + w_3 \cdot \text{ToolCostEfficiency}(t)$$
-
-Where:
-- $w_1 = 0.50$: Semantic similarity between tool capabilities and required action.
-- $w_2 = 0.30$: Relevance to active workspace files currently under inspection.
-- $w_3 = 0.20$: Computational cost factor favoring lightweight AST/file tools over heavy shell subshells.
-
-Command risk evaluation $R_{\text{risk}}(c)$ for shell command $c$ determines whether interactive approval is required:
-
-$$R_{\text{risk}}(c) = \sum_{k} v_k \cdot \mathbb{I}(c \text{ matches pattern } k)$$
-
-Where matching destructive patterns ($c \in \{\text{rm}, \text{force}, \text{sudo}, \text{kill}\}$) yields $R_{\text{risk}} \ge 1.0$, immediately triggering mandatory user confirmation.
-
-### 3. Thresholding & Refusal Decision Criteria
-Operations that exceed safety thresholds or violate procedural rules trigger immediate refusal with standardized error codes:
-
-| Threshold Parameter | Value | Decision / Refusal Action | Error Code |
-| :--- | :--- | :--- | :--- |
-| **Interactive User Rejection** | Operator declines permission prompt | Abort proposed shell action; seek alternative path | `ERR_PERMISSION_DENIED_BY_USER` |
-| **Process Execution Timeout** | Command execution time > 120 s | Terminate child process; capture partial stdout/stderr | `ERR_SHELL_COMMAND_TIMEOUT` |
-| **Premature Completion Claim** | Zero test evidence provided | Reject assertion; mandate test execution command | `ERR_UNVERIFIED_COMPLETION_ASSERTION` |
-| **Context Token Limit** | Context length > 180,000 tokens | Trigger automatic context pruning & history compaction | `ERR_CONTEXT_WINDOW_OVERFLOW` |
-| **Subagent Recursion Limit** | Swarm nesting depth > 3 levels | Block child subagent spawn; enforce flat coordination | `ERR_SUBAGENT_RECURSION_LIMIT` |
-
-### 4. Multi-Tier Fallback Mechanisms & Human-in-the-Loop Governance
-1. **Tier 1 (Automated Tool Retry & Backoff)**: Transient network errors or brief file lock collisions automatically retry up to 3 times with exponential backoff before failing.
-2. **Tier 2 (Model & Tool Fallback)**: If a frontier model returns empty or invalid tool arguments, the engine falls back to an alternate configured provider or simpler file tools.
-3. **Tier 3 (Interactive Operator Governance)**: Destructive commands, persistent test failures, or ambiguous user queries pause execution and prompt the human developer in the terminal.
-
----
-
-## The Data It Uses
-
-### 1. Ingestion Data & Input Types
-- **Developer Instructions**: Natural language coding prompts, questions, and feature requests.
-- **Local Source Files**: Source code, test scripts, project manifests, and diff patches.
-- **Terminal Telemetry**: Process return codes, stdout/stderr streams, and execution timings.
-
-### 2. Reference Standards & Methodologies
-- **Model Context Protocol (MCP)**: JSON-RPC 2.0 interoperability standard for LLMs and tools.
-- **Test-Driven Development (TDD)**: Red-Green-Refactor development methodology.
-- **POSIX Shell Standards**: Deterministic command exit code semantics.
-
-### 3. Model Lineage & System Architecture
-- **Supported Models**: Anthropic Claude 3.5 Sonnet / Haiku / Opus, OpenAI GPT-4o / o1, DeepSeek, Local Ollama.
-- **Runtime Environment**: Python 3.10+, Typer, Prompt Toolkit, Textual, Rich, websockets.
-
-### 4. Data Privacy, Governance & Retention
-- **Local Processing**: Code changes and file edits happen locally on the developer's filesystem.
-- **Zero Involuntary Telemetry**: No tracking metrics or conversational history are uploaded to third parties.
-- **Credential Protection**: Environment variables and API keys are redacted from logs and terminal transcripts.
-
----
-
-## Limitations
-
-### 1. Interactive Terminal Shell Stalling on Indefinite Prompts | Section 1 | Verified |
+| - Interactive Terminal Shell Stalling on Indefinite Prompts | Section 1 | Verified |
 | - Context Truncation on Very Large Compiler Output Logs | Section 2 | Verified |
 | - Non-Idempotent Bash Commands During Automated Retries | Section 3 | Verified |
 | - Rate Limiting on Upstream Frontier LLM API Providers | Section 4 | Verified |
